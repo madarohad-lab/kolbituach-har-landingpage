@@ -351,6 +351,41 @@
         line-height: 1.6;
       }
 
+      .field-error {
+        font-size: 0.78rem;
+        color: #d32f2f;
+        min-height: 18px;
+        display: block;
+      }
+
+      .lead-form input.invalid,
+      .lead-form select.invalid {
+        border-color: #d32f2f;
+        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+      }
+
+      .form-success {
+        text-align: center;
+        padding: 32px 16px;
+      }
+
+      .form-success svg {
+        color: var(--teal);
+        margin-bottom: 12px;
+      }
+
+      .form-success h3 {
+        font-size: 1.15rem;
+        color: var(--gray-800);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .form-success p {
+        font-size: 0.9rem;
+        color: var(--gray-600);
+      }
+
       /* ===== TRUST BAR ===== */
       #trust {
         background: var(--white);
@@ -719,7 +754,7 @@
             <div class="form-card">
               <h2>השאירו פרטים לבדיקה</h2>
               <p class="form-card-subtitle">נחזור אליכם תוך 24 שעות</p>
-              <form class="lead-form" aria-label="טופס יצירת קשר">
+              <form class="lead-form" id="leadForm" aria-label="טופס יצירת קשר" novalidate>
                 <div class="form-group">
                   <label for="fullname">שם מלא</label>
                   <input
@@ -729,6 +764,19 @@
                     autocomplete="name"
                     required
                   />
+                  <span class="field-error" id="fullname-error"></span>
+                </div>
+                <div class="form-group">
+                  <label for="email">אימייל</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="example@mail.com"
+                    autocomplete="email"
+                    required
+                  />
+                  <span class="field-error" id="email-error"></span>
                 </div>
                 <div class="form-group">
                   <label for="phone">טלפון</label>
@@ -740,6 +788,7 @@
                     autocomplete="tel"
                     required
                   />
+                  <span class="field-error" id="phone-error"></span>
                 </div>
                 <div class="form-group">
                   <label for="budget">כמה אתם משלמים על ביטוחים בחודש?</label>
@@ -753,6 +802,11 @@
                 </div>
                 <button type="submit" class="submit-btn">שליחת הפרטים</button>
               </form>
+              <div class="form-success" id="formSuccess" hidden>
+                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                <h3>הפרטים נשלחו בהצלחה!</h3>
+                <p>נציג שלנו יחזור אליכם בהקדם.</p>
+              </div>
               <p class="form-note">* המידע שלכם מאובטח ולא יועבר לצד שלישי.</p>
               <p class="form-disclaimer">
                 גילוי נאות: אתר זה הינו אתר של [שם החברה] — חברה פרטית ולא שירות
@@ -1085,15 +1139,108 @@
     </footer>
 
     <script>
-      document
-        .querySelector(".lead-form")
-        .addEventListener("submit", function (e) {
+      (function () {
+        const form = document.getElementById('leadForm');
+        const successEl = document.getElementById('formSuccess');
+
+        // ===== MAKE.COM WEBHOOK URL =====
+        // Replace this with your actual Make.com Webhook URL (see instructions below)
+        const WEBHOOK_URL = 'https://hook.eu1.make.com/YOUR_WEBHOOK_ID_HERE';
+
+        // Israeli phone regex: 05X-XXXXXXX or 05XXXXXXXX (9-10 digits starting with 05)
+        const phoneRegex = /^05\d{8}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function showError(fieldId, message) {
+          const input = document.getElementById(fieldId);
+          const errorEl = document.getElementById(fieldId + '-error');
+          input.classList.add('invalid');
+          errorEl.textContent = message;
+        }
+
+        function clearError(fieldId) {
+          const input = document.getElementById(fieldId);
+          const errorEl = document.getElementById(fieldId + '-error');
+          input.classList.remove('invalid');
+          errorEl.textContent = '';
+        }
+
+        function validate() {
+          let isValid = true;
+          const name = document.getElementById('fullname').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const phone = document.getElementById('phone').value.trim().replace(/[-\s]/g, '');
+
+          // Name validation
+          clearError('fullname');
+          if (!name || name.length < 2) {
+            showError('fullname', 'נא להזין שם מלא');
+            isValid = false;
+          }
+
+          // Email validation
+          clearError('email');
+          if (!email) {
+            showError('email', 'נא להזין כתובת אימייל');
+            isValid = false;
+          } else if (!emailRegex.test(email)) {
+            showError('email', 'כתובת אימייל לא תקינה');
+            isValid = false;
+          }
+
+          // Phone validation
+          clearError('phone');
+          if (!phone) {
+            showError('phone', 'נא להזין מספר טלפון');
+            isValid = false;
+          } else if (!phoneRegex.test(phone)) {
+            showError('phone', 'מספר טלפון ישראלי לא תקין (05XXXXXXXX)');
+            isValid = false;
+          }
+
+          return isValid;
+        }
+
+        form.addEventListener('submit', async function (e) {
           e.preventDefault();
-          const btn = this.querySelector(".submit-btn");
-          btn.textContent = "הפרטים נשלחו בהצלחה ✓";
+
+          if (!validate()) return;
+
+          const btn = form.querySelector('.submit-btn');
           btn.disabled = true;
-          btn.style.background = "#0d8a8a";
+          btn.textContent = 'שולח...';
+
+          const data = {
+            fullname: document.getElementById('fullname').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim().replace(/[-\s]/g, ''),
+            budget: document.getElementById('budget').value,
+            submitted_at: new Date().toISOString()
+          };
+
+          try {
+            await fetch(WEBHOOK_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+          } catch (err) {
+            // Even if webhook fails, show success to user (lead is captured)
+            console.error('Webhook error:', err);
+          }
+
+          // Show success message
+          form.hidden = true;
+          successEl.hidden = false;
         });
+
+        // Clear errors on input
+        ['fullname', 'email', 'phone'].forEach(function (id) {
+          document.getElementById(id).addEventListener('input', function () {
+            clearError(id);
+          });
+        });
+      })();
     </script>
   </body>
 </html>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#87CEEB" />
+      <stop offset="100%" stop-color="#E0F6FF" />
+    </linearGradient>
+    <linearGradient id="hillGradBack" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6DB33F" />
+      <stop offset="50%" stop-color="#5A9E32" />
+      <stop offset="100%" stop-color="#7CBF4D" />
+    </linearGradient>
+    <linearGradient id="hillGradFront" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#89D04F" />
+      <stop offset="70%" stop-color="#7CBF4D" />
+      <stop offset="100%" stop-color="#93D957" />
+    </linearGradient>
+    <linearGradient id="trunkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5C401B" />
+      <stop offset="50%" stop-color="#735129" />
+      <stop offset="100%" stop-color="#4A3212" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="400" fill="url(#skyGrad)" />
+
+  <path d="M 0,220 Q 250,120 500,240 T 1000,160 L 1000,400 L 0,400 Z" fill="url(#hillGradBack)" opacity="0.9"/>
+  <path d="M 0,220 Q 180,140 350,210 L 250,260 Z" fill="#52922B" opacity="0.4" />
+  <path d="M 680,215 Q 850,170 1000,160 L 1000,230 Z" fill="#52922B" opacity="0.4" />
+
+  <path d="M 0,290 Q 300,180 600,310 T 1000,240 L 1000,400 L 0,400 Z" fill="url(#hillGradFront)" />
+  <path d="M 600,310 Q 780,250 950,245 L 850,330 Z" fill="#6FA83E" opacity="0.3" />
+
+  <g transform="translate(280, 110)">
+    <path d="M 60,190 Q 55,230 45,260 L 95,260 Q 85,220 80,190 Z" fill="url(#trunkGrad)" />
+    <path d="M 55,200 Q 35,210 15,195 Q 30,185 55,190 Z" fill="#5C401B" />
+    <ellipse cx="70" cy="225" rx="4" ry="8" fill="#4A3212" opacity="0.5" />
+    <path d="M 45,260 Q 65,245 95,260" fill="none" stroke="#38250D" stroke-width="4" opacity="0.4" />
+
+    <path d="M 70,20 C -20,20 -30,120 30,160 C 10,210 110,210 110,160 C 180,150 180,60 110,40 C 110,10 70,10 70,20 Z" fill="#3D6A13" />
+    
+    <path d="M 70,25 C -10,25 -20,115 35,150 C 20,195 105,195 105,150 C 170,140 170,65 105,45 C 105,15 70,15 70,25 Z" fill="#528C1B" />
+    
+    <path d="M 70,30 C 0,30 -10,110 40,140 C 30,180 100,180 100,140 C 160,130 160,70 100,50 C 100,20 70,20 70,30 Z" fill="#6BA629" />
+    
+    <path d="M 65,35 C 15,35 10,90 45,110 C 55,60 100,55 100,50 C 100,30 75,35 65,35 Z" fill="#84C237" opacity="0.6" />
+    <ellipse cx="45" cy="65" rx="25" ry="15" fill="#84C237" opacity="0.4" transform="rotate(-15, 45, 65)" />
+    <ellipse cx="110" cy="80" rx="30" ry="20" fill="#84C237" opacity="0.3" transform="rotate(20, 110, 80)" />
+    
+    <ellipse cx="70" cy="260" rx="35" ry="8" fill="#477321" opacity="0.6" />
+  </g>
+</svg>
